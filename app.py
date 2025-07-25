@@ -33,8 +33,7 @@ if data_input:
             output = io.BytesIO()
             with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
                 df.to_excel(writer, index=False, sheet_name='Sheet1')
-                writer.save()
-                excel_data = output.getvalue()
+            excel_data = output.getvalue()
 
             st.download_button(
                 label="📥 Download as XLSX",
@@ -67,7 +66,7 @@ if data_input:
         st.markdown(f"[💬 WhatsApp]({whatsapp_link}) | [📧 Gmail]({gmail_link}) | [💻 Google Chat]({chat_link})")
 
     except Exception as e:
-        st.error(f"❌ Failed to parse the data. Please ensure it's copied from Excel or a spreadsheet.")
+        st.error("❌ Failed to parse the data. Please ensure it's copied from Excel or a spreadsheet.")
         st.exception(e)
 else:
     st.info("Paste your table data copied from Excel or Google Sheets.")
