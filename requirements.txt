@@ -1,1 +1,6 @@
-streamlit\npandas\nxlsxwriter
+streamlit
+pandas
+xlsxwriter
+matplotlib
+openpyxl
+plotly
