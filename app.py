@@ -3,6 +3,9 @@ import pandas as pd
 import io
 import base64
 from datetime import datetime
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 st.set_page_config(page_title="📋 Clipboard to Canvas", layout="wide")
 st.title("📋 Clipboard to Canvas")
@@ -17,13 +20,17 @@ if data_input:
         df = pd.read_csv(io.StringIO(data_input), sep="\t")
         st.success("✅ Data parsed successfully!")
 
-        # Show styled table
+        # Show styled table with enhanced aesthetics and interactivity
         st.subheader("📊 Preview")
-        st.dataframe(df.style.set_table_styles(
-            [{'selector': 'thead th', 'props': [('background-color', '#f2f2f2'),
-                                                ('color', '#333'),
-                                                ('font-weight', 'bold')]}]
-        ).highlight_max(axis=0), use_container_width=True)
+        fig, ax = plt.subplots()
+        sns.set(style="whitegrid")
+        table_styled = df.style.apply(lambda x: ["background: lightgreen" if x.name % 2 == 0 else "background: white" for i in x], axis=1)
+        ax.axis('off')
+        tbl = ax.table(cellText=df.values, colLabels=df.columns, loc='center', cellColours=[['lightblue' if (i+j) % 2 == 0 else 'white' for i in range(len(df.columns))] for j in range(len(df))])
+        tbl.auto_set_font_size(False)
+        tbl.set_fontsize(10)
+        plt.tight_layout()
+        st.pyplot(fig)
 
         # --- Export buttons ---
         col1, col2 = st.columns(2)
@@ -31,10 +38,10 @@ if data_input:
         # Export to Excel
         with col1:
             output = io.BytesIO()
-            with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-                df.to_excel(writer, index=False, sheet_name='Sheet1')
+            writer = pd.ExcelWriter(output, engine='xlsxwriter')
+            df.to_excel(writer, index=False, sheet_name='Sheet1')
+            writer.close()
             excel_data = output.getvalue()
-
             st.download_button(
                 label="📥 Download as XLSX",
                 data=excel_data,
@@ -44,11 +51,11 @@ if data_input:
 
         # Export to PDF (as styled HTML table)
         with col2:
-            html_table = df.to_html(index=False)
+            html_table = df.to_html(index=False, float_format="{:,.2f}".format)
             html_str = f"""
                 <html>
-                    <head><meta charset='utf-8'></head>
-                    <body><h2>Clipboard to Canvas Export</h2>{html_table}</body>
+                    <head><meta charset='utf-8'><title>Clipboard to Canvas Export</title></head>
+                    <body>{html_table}</body>
                 </html>"""
             b64 = base64.b64encode(html_str.encode()).decode()
             href = f'data:text/html;base64,{b64}'
@@ -56,13 +63,10 @@ if data_input:
 
         # --- Sharing links ---
         st.subheader("🔗 Share")
-        st.markdown("Generate a message you can copy into apps:")
-        share_text = f"Check out this formatted table I created with Clipboard to Canvas! 📋✨"
-
+        share_text = f"Check out this formatted table I created with Clipboard to Canvas! 📋✨{href}"
         whatsapp_link = f"https://wa.me/?text={share_text}"
         gmail_link = f"mailto:?subject=Shared Table&body={share_text}"
         chat_link = f"https://chat.google.com/?message={share_text}"
-
         st.markdown(f"[💬 WhatsApp]({whatsapp_link}) | [📧 Gmail]({gmail_link}) | [💻 Google Chat]({chat_link})")
 
     except Exception as e:
