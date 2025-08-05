@@ -21,6 +21,7 @@ This application is built using Streamlit and runs entirely in the browser. Simp
 - Clone this repository or download it as a ZIP file.
 - Install the required Python packages by running `pip install -r requirements.txt`.
 - Run the application with `streamlit run app.py`.
+<img width="2397" height="1121" alt="image" src="https://github.com/user-attachments/assets/0e1e206e-8586-4e12-964a-990c2b5303b2" />
 
 ## Contributing
 Contributions are welcome! Please open an issue first to discuss proposed changes before submitting pull requests. For major changes, please consider discussing them in a GitHub discussion first.
